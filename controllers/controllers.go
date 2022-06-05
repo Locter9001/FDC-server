@@ -687,6 +687,16 @@ func ReportEnd(c *gin.Context) {
 
 func UploadFile(c *gin.Context) {
 	var urls []string
+	strToken := c.Param("token")
+	claim, err := verifyAction(strToken)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"code": 9007})
+		return
+	}
+	if claim.Permissions < 1 {
+		c.JSON(http.StatusNotFound, gin.H{"code": 9008})
+		return
+	}
 	form, _ := c.MultipartForm()
 	files := form.File["file"]
 	fileType := c.PostForm("fileType")
@@ -708,7 +718,8 @@ func UploadFile(c *gin.Context) {
 		//save the file to specific dst
 		err := c.SaveUploadedFile(f, dst)
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"code": 9006})
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 9006})
 			return
 		}
 	}
@@ -847,6 +858,28 @@ func AddMaster(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"msg": 200,
 	})
+}
+
+//UpAvatar 上传头像
+func UpAvatar(c *gin.Context) {
+	form, _ := c.MultipartForm()
+	files := form.File["file"]
+	var url string
+	for _, f := range files {
+		log.Println(f.Filename)                       //print filename
+		dst := fmt.Sprintf("./avatar/%s", f.Filename) //构建目标文件的位置
+		fmt.Println("file:", dst)
+		//save the file to specific dst
+		err := c.SaveUploadedFile(f, dst)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 9006})
+			return
+		}
+		url = "https://" + c.Request.Host + "/avatar/" + f.Filename
+	}
+	fmt.Println(url)
+	c.JSON(http.StatusOK, gin.H{"uploading": "done", "message": "success", "urls": url})
 }
 
 //func AddAdmin(c *gin.Context) {

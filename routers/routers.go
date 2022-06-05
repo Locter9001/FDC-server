@@ -30,7 +30,7 @@ func SetupRouter() *gin.Engine {
 			master.POST("/insertGoods/:token", controllers.InsertGoods)        //新增楼盘 ok
 			master.GET("/refresh-token/:token", controllers.RefreshToken)      //刷新token ok
 			master.GET("/get-goods/:token", controllers.GetAdminGoods)         //获取管理员版所有房产信息 ok
-			master.POST("/upfile", controllers.UploadFile)                     //上传文件 ok
+			master.POST("/upfile/:token", controllers.UploadFile)              //上传文件 ok
 			master.POST("/report/:token", controllers.Report)                  //新增报备 ok
 			master.GET("/look-report/:token", controllers.LookReport)          //带看接口
 			master.POST("/add-custom/:token", controllers.AddCustomer)         //新增客户 ok
@@ -51,6 +51,7 @@ func SetupRouter() *gin.Engine {
 		{ //用户操作
 			//user.POST("/login", controllers.Login)       //登录
 			user.GET("/SMScode", controllers.GetSMScode) //获取短信验证码
+			master.POST("/avatar", controllers.UpAvatar) //用户上传头像
 		}
 
 	}

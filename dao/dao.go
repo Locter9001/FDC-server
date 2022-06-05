@@ -374,6 +374,8 @@ func GetVCode(phone string) (string, error) {
 		log.Println(err)
 		return code, err
 	}
+	sqlStr2 := `delete from vcodes where phone = ?`
+	_, _ = db.Exec(sqlStr2, phone)
 	return code, err
 }
 
